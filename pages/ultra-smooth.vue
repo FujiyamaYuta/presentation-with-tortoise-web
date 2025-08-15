@@ -1,15 +1,36 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center px-4 py-8">
-    <div class="w-full max-w-6xl">
-      <h1 class="text-3xl md:text-4xl font-bold text-slate-800 text-center mb-6 flex items-center justify-center gap-2">
+  <div 
+    class="transition-colors duration-500"
+    :class="[
+      isPresentationMode 
+        ? 'bg-gradient-to-b from-slate-900 to-slate-800 fixed inset-0 z-50' 
+        : 'bg-gradient-to-b from-slate-50 to-white min-h-screen flex items-center justify-center px-4 py-8'
+    ]"
+  >
+    <div 
+      class="w-full transition-all duration-500"
+      :class="isPresentationMode ? '' : 'max-w-6xl'"
+    >
+      <h1 
+        v-show="!isPresentationMode"
+        class="text-3xl md:text-4xl font-bold text-slate-800 text-center mb-6 flex items-center justify-center gap-2"
+      >
         🎯 プレゼンツール
       </h1>
 
-      <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+      <section 
+        v-show="!isPresentationMode"
+        class="rounded-xl shadow-sm border p-6 mb-6 transition-all duration-500"
+        :class="'bg-white border-slate-200'"
+      >
         <div class="flex flex-wrap items-center gap-4">
           <!-- 発表時間設定 -->
           <div class="flex items-center gap-2">
-            <label for="minutes" class="text-sm font-medium text-gray-700 whitespace-nowrap">
+            <label 
+              for="minutes" 
+              class="text-sm font-medium whitespace-nowrap transition-colors duration-300"
+              :class="isPresentationMode ? 'text-slate-200' : 'text-gray-700'"
+            >
               ⏱ 発表時間
             </label>
             <div class="flex items-center">
@@ -21,7 +42,10 @@
                 v-model.number="presentationMinutes" 
                 class="w-20 border border-gray-300 rounded-l-md px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" 
               />
-              <span class="bg-gray-50 border border-l-0 border-gray-300 rounded-r-md px-3 py-2 text-sm text-gray-600">
+              <span 
+                class="border border-l-0 rounded-r-md px-3 py-2 text-sm transition-colors duration-300"
+                :class="isPresentationMode ? 'bg-slate-700 border-slate-500 text-slate-300' : 'bg-gray-50 border-gray-300 text-gray-600'"
+              >
                 分
               </span>
             </div>
@@ -40,17 +64,29 @@
               />
               <div 
                 @click="openFileDialog"
-                class="flex items-center justify-center w-full p-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-sky-400 hover:bg-sky-50 transition-colors"
-                :class="pdfFile ? 'border-green-300 bg-green-50' : ''"
+                class="flex items-center justify-center w-full p-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors"
+                :class="[
+                  isPresentationMode 
+                    ? (pdfFile ? 'border-green-400 bg-green-900/30' : 'border-slate-500 hover:border-sky-400 hover:bg-slate-700/50')
+                    : (pdfFile ? 'border-green-300 bg-green-50' : 'border-gray-300 hover:border-sky-400 hover:bg-sky-50')
+                ]"
               >
                 <div class="text-center">
-                  <div v-if="!pdfFile" class="flex items-center gap-2 text-gray-600">
+                  <div 
+                    v-if="!pdfFile" 
+                    class="flex items-center gap-2 transition-colors duration-300"
+                    :class="isPresentationMode ? 'text-slate-300' : 'text-gray-600'"
+                  >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                     <span class="text-sm font-medium">PDFファイルを選択</span>
                   </div>
-                  <div v-else class="flex items-center gap-2 text-green-700">
+                  <div 
+                    v-else 
+                    class="flex items-center gap-2 transition-colors duration-300"
+                    :class="isPresentationMode ? 'text-green-300' : 'text-green-700'"
+                  >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -81,8 +117,20 @@
         </div>
       </section>
 
-      <section v-if="pdfPages.length > 0" class="rounded-2xl border border-slate-200 bg-white/70 backdrop-blur shadow-lg overflow-hidden">
-        <div class="flex items-center gap-3 p-3 border-b bg-white/60">
+      <section 
+        v-if="pdfPages.length > 0" 
+        class="overflow-hidden backdrop-blur transition-all duration-500"
+        :class="[
+          isPresentationMode 
+            ? 'fixed inset-0 bg-transparent' 
+            : 'rounded-2xl border border-slate-200 bg-white/70 shadow-lg'
+        ]"
+      >
+        <div 
+          v-show="!isPresentationMode"
+          class="flex items-center gap-3 p-3 border-b transition-all duration-300"
+          :class="'border-b bg-white/60'"
+        >
           <button 
             @click="prevPage" 
             :disabled="currentPage <= 1" 
@@ -143,8 +191,24 @@
           </button>
         </div>
 
-        <div class="relative bg-slate-50" ref="pdfContainer" :style="{ height: containerHeight, overflow: autoFit ? 'hidden' : 'auto' }">
-          <div class="flex justify-center items-center" :style="{ height: containerHeight, padding: '0' }">
+        <div 
+          class="relative transition-all duration-500" 
+          :class="isPresentationMode ? 'bg-slate-900' : 'bg-slate-50'"
+          ref="pdfContainer" 
+          :style="{ 
+            height: isPresentationMode ? '100vh' : containerHeight, 
+            width: isPresentationMode ? '100vw' : 'auto',
+            overflow: autoFit ? 'hidden' : 'auto' 
+          }"
+        >
+          <div 
+            class="flex justify-center items-center" 
+            :style="{ 
+              height: isPresentationMode ? '100vh' : containerHeight, 
+              width: isPresentationMode ? '100vw' : 'auto',
+              padding: '0' 
+            }"
+          >
             <!-- All pages pre-rendered and positioned absolutely -->
             <div :style="slideContainerStyle">
               <img
@@ -164,6 +228,61 @@
             class="absolute right-3 bottom-3 bg-slate-900/70 text-white rounded-md px-2.5 py-1 text-xs font-mono ring-1 ring-white/10 z-10"
           >
             ⏱ {{ remainingFormatted }}
+          </div>
+          
+          <!-- プレゼンテーションモード時のページネーション（左上） -->
+          <div 
+            v-if="isPresentationMode"
+            class="absolute top-4 left-4 z-20"
+          >
+            <!-- ページネーション -->
+            <div class="flex items-center gap-2 bg-slate-800/80 text-white rounded-lg px-4 py-2 backdrop-blur">
+              <button
+                @click="prevPage"
+                :disabled="currentPage <= 1"
+                class="p-1 rounded hover:bg-slate-700 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              
+              <div class="flex items-center gap-1 text-sm">
+                <input 
+                  type="number" 
+                  min="1" 
+                  :max="totalPages" 
+                  v-model.number="currentPageInput" 
+                  @change="goToPage"
+                  @keyup.enter="goToPage"
+                  class="w-12 bg-slate-700 text-white text-center rounded px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400" 
+                />
+                <span class="text-xs text-slate-300">/ {{ totalPages }}</span>
+              </div>
+              
+              <button
+                @click="nextPage"
+                :disabled="currentPage >= totalPages"
+                class="p-1 rounded hover:bg-slate-700 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- プレゼンテーションモード時の終了ボタン（右上） -->
+          <div 
+            v-if="isPresentationMode"
+            class="absolute top-4 right-4 z-20"
+          >
+            <button
+              @click="resetTimer"
+              class="px-4 py-2 bg-red-600/80 text-white rounded-lg hover:bg-red-700/80 transition-colors text-sm backdrop-blur"
+            >
+              終了
+            </button>
           </div>
         </div>
       </section>
@@ -201,11 +320,13 @@ const pdfContainer = ref(null)
 const fileInput = ref(null)
 const containerHeight = ref('70vh')
 const windowSize = ref({ width: 0, height: 0 })
+const isNavigating = ref(false)
 
 let timerId = null
 let pageAdvanceId = null
 
 const isTimerRunning = computed(() => timerId !== null)
+const isPresentationMode = computed(() => remainingSeconds.value >= 0 && pdfPages.value.length > 0)
 
 const remainingFormatted = computed(() => {
   if (remainingSeconds.value < 0) return '--:--'
@@ -323,20 +444,35 @@ async function onFileChange(event) {
 }
 
 function nextPage() {
-  if (currentPage.value >= totalPages.value) return
+  if (currentPage.value >= totalPages.value || isNavigating.value) return
+  isNavigating.value = true
   currentPage.value += 1
   currentPageInput.value = currentPage.value
+  // デバウンス処理
+  setTimeout(() => {
+    isNavigating.value = false
+  }, 150)
 }
 
 function prevPage() {
-  if (currentPage.value <= 1) return
+  if (currentPage.value <= 1 || isNavigating.value) return
+  isNavigating.value = true
   currentPage.value -= 1
   currentPageInput.value = currentPage.value
+  // デバウンス処理
+  setTimeout(() => {
+    isNavigating.value = false
+  }, 150)
 }
 
 function goToPage() {
+  if (isNavigating.value) return
+  isNavigating.value = true
   currentPage.value = Math.max(1, Math.min(totalPages.value, currentPageInput.value))
   currentPageInput.value = currentPage.value
+  setTimeout(() => {
+    isNavigating.value = false
+  }, 150)
 }
 
 function startPresentation() {
@@ -354,22 +490,17 @@ function startPresentation() {
       clearInterval(timerId)
       timerId = null
       beep()
+      // 時間切れでもプレゼンテーションモードは継続
+      // remainingSeconds は 0 のまま維持してプレゼンモードを継続
     }
   }, 1000)
   
-  // Auto-advance pages
+  // 自動進行機能を無効化
+  // ユーザーが手動でページを操作するためタイマーのみ動作
   if (pageAdvanceId) clearInterval(pageAdvanceId)
-  if (totalPages.value > 1) {
-    const intervalMs = Math.floor((minutes * 60 * 1000) / (totalPages.value - 1))
-    pageAdvanceId = setInterval(() => {
-      if (currentPage.value < totalPages.value) {
-        nextPage()
-      } else {
-        clearInterval(pageAdvanceId)
-        pageAdvanceId = null
-      }
-    }, intervalMs)
-  }
+  
+  // スクロールを上部に移動
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 function resetTimer() {
@@ -382,6 +513,10 @@ function resetTimer() {
     pageAdvanceId = null
   }
   remainingSeconds.value = -1
+  // プレゼンテーションモード終了時にページ上部にスクロール
+  setTimeout(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, 100)
 }
 
 function beep() {
@@ -408,8 +543,8 @@ function beep() {
 
 function toggleFullscreen() {
   if (!document.fullscreenElement) {
-    if (pdfContainer.value?.requestFullscreen) {
-      pdfContainer.value.requestFullscreen()
+    if (document.documentElement?.requestFullscreen) {
+      document.documentElement.requestFullscreen()
       isFullscreen.value = true
       containerHeight.value = '100vh'
     }
@@ -460,34 +595,50 @@ onMounted(() => {
     if (pdfPages.value.length === 0) return
     
     switch(e.key) {
+      case 'Escape':
+        if (isPresentationMode.value) {
+          e.preventDefault()
+          resetTimer()
+        }
+        break
       case 'ArrowLeft':
+        e.preventDefault()
         prevPage()
         break
       case 'ArrowRight':
+        e.preventDefault()
         nextPage()
         break
       case 'f':
       case 'F':
-        toggleFullscreen()
+        if (!isPresentationMode.value) {
+          toggleFullscreen()
+        }
         break
       case ' ':
         e.preventDefault()
-        if (!isTimerRunning.value) {
+        if (!isTimerRunning.value && !isPresentationMode.value) {
           startPresentation()
         }
         break
       case '+':
       case '=':
-        autoFit.value = false
-        scale.value = Math.min(2.5, scale.value + 0.1)
+        if (!isPresentationMode.value) {
+          autoFit.value = false
+          scale.value = Math.min(2.5, scale.value + 0.1)
+        }
         break
       case '-':
       case '_':
-        autoFit.value = false
-        scale.value = Math.max(0.5, scale.value - 0.1)
+        if (!isPresentationMode.value) {
+          autoFit.value = false
+          scale.value = Math.max(0.5, scale.value - 0.1)
+        }
         break
       case '0':
-        autoFit.value = !autoFit.value
+        if (!isPresentationMode.value) {
+          autoFit.value = !autoFit.value
+        }
         break
     }
   })

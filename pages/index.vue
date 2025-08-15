@@ -11,12 +11,16 @@
       class="w-full transition-all duration-500"
       :class="isPresentationMode ? '' : 'max-w-6xl'"
     >
-      <h1 
+      <!-- Header with logo -->
+      <div 
         v-show="!isPresentationMode"
-        class="text-3xl md:text-4xl font-bold text-slate-800 text-center mb-6 flex items-center justify-center gap-2"
+        class="mb-6"
       >
-        🎯 プレゼンツール
-      </h1>
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-800 flex items-center gap-2">
+          🐢 Tortoise
+        </h1>
+        <p class="text-sm text-slate-600 mt-1">Slow and steady wins the race</p>
+      </div>
 
       <section 
         v-show="!isPresentationMode"
@@ -120,6 +124,22 @@
         </div>
       </section>
 
+      <!-- サービス説明 -->
+      <div 
+        v-show="!isPresentationMode"
+        class="mb-8 px-2"
+      >
+        <button
+          @click="showAbout = !showAbout"
+          class="text-sm text-slate-500 hover:text-slate-700 underline cursor-pointer mb-2"
+        >
+          このツールはなに？
+        </button>
+        <p v-if="showAbout" class="text-sm text-slate-500 leading-relaxed mt-2">
+          このサービスはプレゼンを時間通りに進めるためのツールです。うさぎ（🐰 スライドの進捗）とカメ（🐢 時間）でそれぞれが進み、現時点のスライドの進捗を可視化することができます。<a href="https://rabbit-shocker.org/ja/" target="_blank" class="text-slate-600 hover:text-slate-800 underline">Rabbit</a>というツールをオマージュしており、Nuxt3で作っています。
+        </p>
+      </div>
+
       <section 
         v-if="pdfPages.length > 0" 
         class="overflow-hidden backdrop-blur transition-all duration-500"
@@ -219,84 +239,107 @@
             </div>
           </div>
           
-          <div 
-            v-if="remainingSeconds >= 0" 
-            class="absolute right-3 bottom-12 bg-slate-900/70 text-white rounded-md px-2.5 py-1 text-xs font-mono ring-1 ring-white/10 z-10"
-          >
-            ⏱ {{ remainingFormatted }}
-          </div>
-          
-          <!-- プレゼンテーションモード時のページネーション（左上） -->
+          <!-- プレゼンテーションモード時の統一コントロールバー（上部） -->
           <div 
             v-if="isPresentationMode"
             class="absolute top-4 left-4 z-20"
           >
-            <!-- ページネーション（コンパクト化＆トグル統合） -->
-            <div class="flex items-center gap-1.5 bg-slate-800/80 text-white rounded-lg px-3 py-1.5 backdrop-blur text-xs">
-              <button
-                @click="prevPage"
-                :disabled="currentPage <= 1"
-                class="p-1 rounded hover:bg-slate-700 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
-              >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-              </button>
-              
-              <div class="flex items-center gap-1">
-                <input 
-                  type="number" 
-                  min="1" 
-                  :max="totalPages" 
-                  v-model.number="currentPageInput" 
-                  @change="goToPage"
-                  @keyup.enter="goToPage"
-                  class="w-10 bg-slate-700 text-white text-center rounded px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400" 
-                />
-                <span class="text-xs text-slate-300">/ {{ totalPages }}</span>
+            <!-- 左側：ページネーション＆オプション -->
+            <div class="flex flex-col gap-1">
+              <!-- 上段：ページネーション -->
+              <div class="flex items-center gap-1 bg-slate-800/80 text-white rounded-md px-2 py-1 backdrop-blur text-xs">
+                <button
+                  @click="prevPage"
+                  :disabled="currentPage <= 1"
+                  class="p-0.5 rounded hover:bg-slate-700 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+                >
+                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                </button>
+                
+                <div class="flex items-center gap-0.5">
+                  <input 
+                    type="number" 
+                    min="1" 
+                    :max="totalPages" 
+                    v-model.number="currentPageInput" 
+                    @change="goToPage"
+                    @keyup.enter="goToPage"
+                    class="w-8 bg-slate-700 text-white text-center rounded px-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400" 
+                  />
+                  <span class="text-xs text-slate-300">/ {{ totalPages }}</span>
+                </div>
+                
+                <button
+                  @click="nextPage"
+                  :disabled="currentPage >= totalPages"
+                  class="p-0.5 rounded hover:bg-slate-700 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+                >
+                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </button>
               </div>
               
-              <button
-                @click="nextPage"
-                :disabled="currentPage >= totalPages"
-                class="p-1 rounded hover:bg-slate-700 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
-              >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </button>
-              
-              <!-- セパレーター -->
-              <div class="w-px h-3 bg-slate-600 mx-1"></div>
-              
-              <!-- レースバー表示切り替え（統合） -->
-              <button
-                @click="showRaceBar = !showRaceBar"
-                class="p-1 rounded hover:bg-slate-600/80 transition-colors"
-                :title="showRaceBar ? 'レースを非表示' : 'レースを表示'"
-              >
-                <svg v-if="showRaceBar" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                </svg>
-                <svg v-else class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </button>
+              <!-- 下段：オプションボタンとタイマー -->
+              <div class="flex items-center gap-1 bg-slate-800/80 text-white rounded-md px-2 py-1 backdrop-blur">
+                <!-- レースバー表示切り替え -->
+                <button
+                  @click="showRaceBar = !showRaceBar"
+                  class="p-0.5 rounded hover:bg-slate-600/80 transition-colors"
+                  :title="showRaceBar ? 'レースを非表示' : 'レースを表示'"
+                >
+                  <svg v-if="showRaceBar" class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <svg v-else class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                  </svg>
+                </button>
+                
+                <!-- タイマー表示切り替え -->
+                <button
+                  @click="showTimer = !showTimer"
+                  class="p-0.5 rounded hover:bg-slate-600/80 transition-colors"
+                  :title="showTimer ? 'タイマーを非表示' : 'タイマーを表示'"
+                >
+                  <svg v-if="showTimer" class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <svg v-else class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+                  </svg>
+                </button>
+                
+                <!-- セパレーター -->
+                <div class="w-px h-2.5 bg-slate-600 mx-0.5"></div>
+                
+                <!-- 終了ボタン（アイコン） -->
+                <button
+                  @click="stopPresentation"
+                  class="p-0.5 rounded hover:bg-red-600/80 transition-colors"
+                  title="プレゼンテーションを終了"
+                >
+                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                
+                <!-- セパレーター -->
+                <div v-if="showTimer && remainingSeconds >= 0" class="w-px h-2.5 bg-slate-600 mx-0.5"></div>
+                
+                <!-- タイマー -->
+                <div 
+                  v-if="showTimer && remainingSeconds >= 0" 
+                  class="text-xs font-mono"
+                >
+                  {{ remainingFormatted }}
+                </div>
+              </div>
             </div>
-          </div>
-          
-          <!-- プレゼンテーションモード時の終了ボタン（右上） -->
-          <div 
-            v-if="isPresentationMode"
-            class="absolute top-4 right-4 z-20"
-          >
-            <button
-              @click="stopPresentation"
-              class="px-4 py-2 bg-red-600/80 text-white rounded-lg hover:bg-red-700/80 transition-colors text-sm backdrop-blur"
-            >
-              終了
-            </button>
           </div>
           
           <!-- うさぎとカメのレース（プレゼンモード時のみ） -->
@@ -361,6 +404,20 @@
         </div>
       </section>
     </div>
+    
+    <!-- Copyright -->
+    <div 
+      v-if="!isPresentationMode"
+      class="fixed bottom-2 right-2 text-xs text-slate-500"
+    >
+      <a 
+        href="https://github.com/FujiyamaYuta/presentation-with-tortoise-web" 
+        target="_blank"
+        class="hover:text-slate-700 transition-colors"
+      >
+        © OH MY GOD Inc.
+      </a>
+    </div>
   </div>
 </template>
 
@@ -390,6 +447,8 @@ const raceWinner = ref(null) // 'rabbit' | 'turtle' | null
 const totalPresentationTime = ref(0) // 総プレゼン時間（秒）
 const showRaceBar = ref(true) // レースバーの表示/非表示
 const isPresenting = ref(false) // プレゼンテーション中フラグ（より確実な状態管理）
+const showAbout = ref(false) // About説明の表示/非表示
+const showTimer = ref(true) // タイマーの表示/非表示
 
 let timerId = null
 let pageAdvanceId = null
@@ -397,18 +456,18 @@ let pageAdvanceId = null
 const isTimerRunning = computed(() => timerId !== null)
 const isPresentationMode = computed(() => remainingSeconds.value >= 0 && pdfPages.value.length > 0)
 
-// うさぎの位置計算（時間ベース）
+// うさぎの位置計算（スライドベース）
 const rabbitPositionPercent = computed(() => {
-  if (!isPresentationMode.value || totalPresentationTime.value === 0) return 0
-  const elapsedTime = totalPresentationTime.value - remainingSeconds.value
-  return Math.min(100, (elapsedTime / totalPresentationTime.value) * 100)
-})
-
-// カメの位置計算（スライドベース）
-const turtlePositionPercent = computed(() => {
   if (!isPresentationMode.value || totalPages.value === 0) return 0
   if (totalPages.value === 1) return 100 // 1ページのみの場合は100%
   return Math.min(100, ((currentPage.value - 1) / (totalPages.value - 1)) * 100)
+})
+
+// カメの位置計算（時間ベース）
+const turtlePositionPercent = computed(() => {
+  if (!isPresentationMode.value || totalPresentationTime.value === 0) return 0
+  const elapsedTime = totalPresentationTime.value - remainingSeconds.value
+  return Math.min(100, (elapsedTime / totalPresentationTime.value) * 100)
 })
 
 // 勝者判定（副作用を回避）

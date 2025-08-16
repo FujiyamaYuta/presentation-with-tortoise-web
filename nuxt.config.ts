@@ -16,12 +16,12 @@ export default defineNuxtConfig({
         { charset: 'utf-8' },
         { property: 'og:title', content: 'Tortoise' },
         { property: 'og:description', content: 'このサービスはプレゼンを時間通りに進めるためのツールです。うさぎ（🐰 スライドの進捗）とカメ（🐢 時間）でそれぞれが進み、現時点のスライドの進捗を可視化することができます。' },
-        { property: 'og:image', content: '/og.png' },
+        { property: 'og:image', content: 'https://tortoise.ohmygod.jp/og.png' },
         { property: 'og:type', content: 'website' },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Tortoise' },
         { name: 'twitter:description', content: 'このサービスはプレゼンを時間通りに進めるためのツールです。うさぎ（🐰 スライドの進捗）とカメ（🐢 時間）でそれぞれが進み、現時点のスライドの進捗を可視化することができます。' },
-        { name: 'twitter:image', content: '/og.png' }
+        { name: 'twitter:image', content: 'https://tortoise.ohmygod.jp/og.png' }
       ]
     }
   }
